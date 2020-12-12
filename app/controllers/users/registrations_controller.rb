@@ -13,25 +13,44 @@ class Users::RegistrationsController < Devise::RegistrationsController
        render :new and return
      end
     session["devise.regist_data"] = {user: @user.attributes}
-    binding.pry
     session["devise.regist_data"][:user]["password"] = params[:user][:password]
-    binding.pry
     @address = @user.build_address
     render :new_address
   end
 
   def create_address
     @user = User.new(session["devise.regist_data"]["user"])
+    binding.pry
     @address = Address.new(address_params)
-     unless @address.valid?
-       render :new_address and return
-     end
+    unless @address.valid?
+      render :new_address and return
+    end
     @user.build_address(@address.attributes)
     @user.save
+
     session["devise.regist_data"]["user"].clear
     sign_in(:user, @user)
   end
  
+
+  session['devise.regist_data'] = { user: @user.attributes , address: @address.attributes }
+  
+  session['devise.regist_data'][:address][:user]['password']  = params[:address][:user][:password]
+  @person = @user.build_person
+  render :new_person
+
+
+
+
+
+
+
+
+
+
+
+
+
   private
  
   def address_params
